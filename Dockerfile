@@ -31,16 +31,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Install vLLM for genai_server backend
-RUN pip install --no-cache-dir vllm>=0.6.0
+# Install PaddleOCR with genai-vllm and doc-parser support
+# genai-vllm extra adds genai_server command for vLLM backend
+RUN pip install --no-cache-dir "paddleocr[genai-vllm,doc-parser]>=3.4.0" "paddlex>=3.4.0"
 
-# Install genai_server dependencies for PaddleOCR
-# This adds the 'genai_server' subcommand to paddleocr CLI
-RUN paddleocr install_genai_server_deps vllm || \
-    pip install --no-cache-dir "paddleocr[genai-vllm]>=3.4.0"
+# Install genai_server dependencies (adds vLLM integration)
+# This registers the 'genai_server' subcommand with paddleocr CLI
+RUN paddleocr install_genai_server_deps vllm
 
-# Install PaddleOCR with doc-parser support
-RUN pip install --no-cache-dir "paddleocr[doc-parser]>=3.4.0" "paddlex>=3.4.0" || true
+# Verify genai_server is available
+RUN paddleocr --help | grep -q genai_server && echo "genai_server OK" || \
+    (echo "ERROR: genai_server not found" && paddleocr --help && exit 1)
 
 # Install RunPod SDK
 RUN pip install --no-cache-dir runpod requests
