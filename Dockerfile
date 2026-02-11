@@ -11,16 +11,17 @@
 #   - Uses CUDA 11.8 base image with sm_86 compiled kernels
 #   - device="gpu" for cv worker (PP-DocLayoutV3) to test GPU support
 
-# Official PaddleX CUDA 11.8 image (has sm_86 for Ampere GPUs)
-FROM ccr-2vdh3abv-pub.cnc.bj.baidubce.com/paddlex/paddlex:paddlex3.3.11-paddlepaddle3.2.0-gpu-cuda11.8-cudnn8.9-trt8.6
+# PaddlePaddle CUDA 11.8 image from Docker Hub (fast download, has sm_86 for Ampere GPUs)
+FROM paddlepaddle/paddle:3.0.0rc1-gpu-cuda11.8-cudnn8.6-trt8.5
 
 USER root
 
 WORKDIR /app
 
 # Install system dependencies for OpenCV and PDF processing
+# Note: libgl1 works on both Ubuntu 22.04 and 24.04 (libgl1-mesa-glx renamed in 24.04)
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    libgl1-mesa-glx \
+    libgl1 \
     libglib2.0-0 \
     libsm6 \
     libxext6 \
