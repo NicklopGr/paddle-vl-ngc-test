@@ -85,3 +85,4 @@ If GPU mode fails, set `CV_DEVICE=cpu` in RunPod environment variables to fall b
 
 # Build trigger 23:41:58
 # Build 00:04:45
+# Retry build 00:09:04
