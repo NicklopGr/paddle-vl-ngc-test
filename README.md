@@ -83,3 +83,4 @@ curl -X POST https://api.runpod.ai/v2/YOUR_ENDPOINT_ID/run \
 
 If GPU mode fails, set `CV_DEVICE=cpu` in RunPod environment variables to fall back to CPU mode (same as production).
 
+# Build trigger 23:41:58
