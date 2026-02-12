@@ -29,6 +29,10 @@ fi
 echo "[start.sh] GPU Information:"
 nvidia-smi --query-gpu=name,compute_cap,memory.total --format=csv,noheader || echo "[start.sh] nvidia-smi failed"
 
+# Install genai_server dependencies at runtime (needs CUDA which isn't available during build)
+echo "[start.sh] Installing genai_server dependencies..."
+paddleocr install_genai_server_deps vllm || echo "[start.sh] WARNING: install_genai_server_deps failed, trying to continue anyway"
+
 # Create vLLM backend config file (--backend_config expects YAML file, not string)
 cat > /tmp/vllm_config.yaml << 'EOF'
 gpu-memory-utilization: 0.85

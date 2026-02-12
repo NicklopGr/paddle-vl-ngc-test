@@ -31,17 +31,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Install PaddleOCR with genai-vllm and doc-parser support
-# genai-vllm extra adds genai_server command for vLLM backend
-RUN pip install --no-cache-dir "paddleocr[genai-vllm,doc-parser]>=3.4.0" "paddlex>=3.4.0"
+# Install PaddleOCR with doc-parser support (skip genai-vllm extra - installs wrong CUDA version)
+RUN pip install --no-cache-dir "paddleocr[doc-parser]>=3.4.0" "paddlex>=3.4.0"
 
-# Install genai_server dependencies (adds vLLM integration)
-# This registers the 'genai_server' subcommand with paddleocr CLI
-RUN paddleocr install_genai_server_deps vllm
+# Install vLLM CUDA 11.8 wheel (latest vLLM requires CUDA 12.x, we need older version)
+# vLLM 0.4.x was the last to support CUDA 11.8
+RUN pip install --no-cache-dir "vllm==0.4.3"
 
-# Verify genai_server is available
-RUN paddleocr --help | grep -q genai_server && echo "genai_server OK" || \
-    (echo "ERROR: genai_server not found" && paddleocr --help && exit 1)
+# Note: paddleocr install_genai_server_deps cannot run during build (needs libcuda.so)
+# It will be run at container startup in start.sh when GPU is available
 
 # Install RunPod SDK
 RUN pip install --no-cache-dir runpod requests
